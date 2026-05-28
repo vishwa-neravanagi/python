@@ -92,13 +92,13 @@ dataset-id-3
 
 **Action: OFF**
 - Reads all dataset IDs from dataset.txt
-- For each dataset: Validates it exists in config.json first
-- If not in config.json: logs error and skips
-- If valid: 
-  - Checks if schedule time matches config.json
-  - If mismatch: logs warning (saves actual time from QuickSight)
-  - Disables the hourly schedule (saves backup for later restore)
-- If already OFF: logs "no action needed"
+- For each dataset:
+  - Gets schedule info from QuickSight
+  - If no schedule found: logs "already OFF" and skips
+  - If schedule found:
+    - If dataset in config.json: checks for time mismatch, logs warning if found
+    - If dataset NOT in config.json: logs warning, captures info from QuickSight
+    - Disables the hourly schedule (saves backup for later restore)
 
 ## Examples
 
@@ -170,11 +170,15 @@ Only contains datasets with HOURLY schedules.
 
 ✅ **Turn OFF:**
 - Dataset ID is in dataset.txt
-- Dataset ID exists in config.json
+- Schedule exists in QuickSight
+- If in config.json: validates time match (warns if mismatch)
+- If NOT in config.json: captures schedule info from QuickSight
 - Schedule is disabled and backed up
 
-❌ **Cannot turn OFF:**
-- Dataset NOT in config.json → Error logged, skipping
+⚠️ **Turn OFF dataset not in config.json:**
+- Allowed - will capture schedule info from QuickSight
+- Logged as warning for visibility
+- Schedule info saved to backup with actual details
 
 ## Usage Examples
 
